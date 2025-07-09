@@ -1,0 +1,168 @@
+### ===============================================
+### API TESTS - ARTICLES (Tests en ordre)
+### ===============================================
+### Assurez-vous d'avoir lancé le serveur : npm run dev
+### Testez les requêtes dans l'ordre indiqué !
+
+### Variables globales
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### ===============================================
+### PREMIER TEST : Vérifier que la liste est vide
+### ===============================================
+### Objectif : S'assurer que l'API fonctionne et qu'il n'y a pas d'articles au départ
+
+GET {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+### Résultat attendu : []
+
+### ===============================================
+### DEUXIÈME TEST : Créer le premier article
+### ===============================================
+### Objectif : Tester la création d'un article avec POST
+
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Premier Article de Test",
+  "content": "Ceci est le contenu du premier article créé pour tester l'API."
+}
+
+### Résultat attendu : Article créé avec ID, title, content, createdAt
+### IMPORTANT : Copiez l'ID retourné pour les tests suivants !
+
+### ===============================================
+### TROISIÈME TEST : Créer un deuxième article
+### ===============================================
+### Objectif : Créer un autre article pour avoir plusieurs éléments
+
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Deuxième Article",
+  "content": "Voici le contenu du deuxième article pour enrichir notre base de données."
+}
+
+### Résultat attendu : Deuxième article créé avec un ID différent
+
+### ===============================================
+### QUATRIÈME TEST : Vérifier la liste des articles
+### ===============================================
+### Objectif : Confirmer que les deux articles sont bien créés
+
+GET {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+### Résultat attendu : Tableau avec 2 articles
+
+### ===============================================
+### CINQUIÈME TEST : Récupérer un article spécifique
+### ===============================================
+### Objectif : Tester la récupération d'un article par son ID
+### REMPLACEZ [ID_ARTICLE] par l'ID du premier article créé
+
+GET {{baseUrl}}/api/articles/[ID_ARTICLE]
+Content-Type: {{contentType}}
+
+### Résultat attendu : Un seul article avec l'ID spécifié
+
+### ===============================================
+### SIXIÈME TEST : Mettre à jour un article
+### ===============================================
+### Objectif : Tester la modification d'un article existant
+### REMPLACEZ [ID_ARTICLE] par l'ID d'un article existant
+
+PUT {{baseUrl}}/api/articles/[ID_ARTICLE]
+Content-Type: {{contentType}}
+
+{
+  "title": "Article Mis à Jour",
+  "content": "Ceci est le contenu mis à jour de l'article. La date de création reste la même."
+}
+
+### Résultat attendu : Article modifié avec nouveau title et content
+
+### ===============================================
+### SEPTIÈME TEST : Vérifier la modification
+### ===============================================
+### Objectif : Confirmer que l'article a bien été modifié
+
+GET {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+### Résultat attendu : Liste avec l'article modifié
+
+### ===============================================
+### HUITIÈME TEST : Supprimer un article
+### ===============================================
+### Objectif : Tester la suppression d'un article
+### REMPLACEZ [ID_ARTICLE] par l'ID d'un article existant
+
+DELETE {{baseUrl}}/api/articles/[ID_ARTICLE]
+Content-Type: {{contentType}}
+
+### Résultat attendu : Article supprimé retourné
+
+### ===============================================
+### NEUVIÈME TEST : Vérifier la suppression
+### ===============================================
+### Objectif : Confirmer que l'article a bien été supprimé
+
+GET {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+### Résultat attendu : Liste avec un article de moins
+
+### ===============================================
+### DIXIÈME TEST : Test d'erreur - Article inexistant
+### ===============================================
+### Objectif : Tester la gestion d'erreur pour un article qui n'existe pas
+
+GET {{baseUrl}}/api/articles/article-inexistant-12345
+Content-Type: {{contentType}}
+
+### Résultat attendu : Erreur 404 avec message "Not found"
+
+### ===============================================
+### ONZIÈME TEST : Test d'erreur - Création invalide
+### ===============================================
+### Objectif : Tester la validation des données (titre manquant)
+
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "content": "Article sans titre"
+}
+
+### Résultat attendu : Erreur 400 avec message "Missing fields"
+
+### ===============================================
+### DOUZIÈME TEST : Test d'erreur - Modification invalide
+### ===============================================
+### Objectif : Tester la validation lors de la modification
+
+PUT {{baseUrl}}/api/articles/article-inexistant-12345
+Content-Type: {{contentType}}
+
+{
+  "title": "Test",
+  "content": "Test"
+}
+
+### Résultat attendu : Erreur 404 avec message "Not found"
+
+### ===============================================
+### INSTRUCTIONS COMPLÈTES :
+### ===============================================
+### 1. Ouvrez un terminal et lancez : npm run dev
+### 2. Ouvrez ce fichier dans VSCode
+### 3. Installez l'extension "REST Client" si nécessaire
+### 4. Testez les requêtes DANS L'ORDRE indiqué
+### 5. Pour les tests 5, 6, 8 : remplacez [ID_ARTICLE] par un vrai ID
+### 6. Observez les résultats attendus après chaque test
+### 7. Les données sont en mémoire : elles disparaissent au redémarrage 

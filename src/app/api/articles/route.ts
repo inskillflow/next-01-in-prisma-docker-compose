@@ -1,30 +1,38 @@
 import { NextResponse } from 'next/server'
-import { articles } from '@/lib/data'
-import { generateId } from '@/lib/utils'
-
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  return NextResponse.json(articles)
+  try {
+    const articles = await prisma.article.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+    return NextResponse.json(articles)
+  } catch (error) {
+    console.error('Error fetching articles:', error)
+    return NextResponse.json({ error: 'Failed to fetch articles' }, { status: 500 })
+  }
 }
 
-
-
-
 export async function POST(req: Request) {
-  const body = await req.json()
+  try {
+    const body = await req.json()
 
-  if (!body.title || !body.content) {
-    return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+    if (!body.title || !body.content) {
+      return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+    }
+
+    const newArticle = await prisma.article.create({
+      data: {
+        title: body.title,
+        content: body.content,
+      }
+    })
+
+    return NextResponse.json(newArticle, { status: 201 })
+  } catch (error) {
+    console.error('Error creating article:', error)
+    return NextResponse.json({ error: 'Failed to create article' }, { status: 500 })
   }
-
-  const newArticle = {
-    id: generateId(),
-    title: body.title,
-    content: body.content,
-    createdAt: new Date().toISOString(),
-  }
-
-  articles.push(newArticle)
-
-  return NextResponse.json(newArticle, { status: 201 })
 }

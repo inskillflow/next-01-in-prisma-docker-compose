@@ -1,0 +1,114 @@
+### Tests API Articles - Next.js avec Neon Database
+### ✅ Serveur lancé sur http://localhost:3000
+### ✅ Base de données Neon connectée
+### ✅ API fonctionnelle avec persistance
+
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### ===========================================
+### 1. GET - Récupérer tous les articles
+### ===========================================
+
+GET {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+### ===========================================
+### 2. POST - Créer un nouvel article
+### ===========================================
+
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Mon premier article",
+  "content": "Ceci est le contenu de mon premier article de test."
+}
+
+### ===========================================
+### 3. POST - Créer un deuxième article
+### ===========================================
+
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Article sur Next.js",
+  "content": "Next.js est un framework React fantastique pour créer des applications web modernes."
+}
+
+### ===========================================
+### 4. GET - Récupérer tous les articles (après création)
+### ===========================================
+
+GET {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+### ===========================================
+### 5. GET - Récupérer un article spécifique
+### REMPLACEZ [ARTICLE_ID] par l'ID d'un article existant
+### ===========================================
+
+GET {{baseUrl}}/api/articles/[ARTICLE_ID]
+Content-Type: {{contentType}}
+
+### ===========================================
+### 6. PUT - Mettre à jour un article
+### REMPLACEZ [ARTICLE_ID] par l'ID d'un article existant
+### ===========================================
+
+PUT {{baseUrl}}/api/articles/[ARTICLE_ID]
+Content-Type: {{contentType}}
+
+{
+  "title": "Article mis à jour",
+  "content": "Ceci est le contenu mis à jour de l'article."
+}
+
+### ===========================================
+### 7. DELETE - Supprimer un article
+### REMPLACEZ [ARTICLE_ID] par l'ID d'un article existant
+### ===========================================
+
+DELETE {{baseUrl}}/api/articles/[ARTICLE_ID]
+Content-Type: {{contentType}}
+
+### ===========================================
+### 8. Tests d'erreurs
+### ===========================================
+
+### POST avec données manquantes (devrait retourner 400)
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Article sans contenu"
+}
+
+### GET d'un article inexistant (devrait retourner 404)
+GET {{baseUrl}}/api/articles/article-inexistant
+Content-Type: {{contentType}}
+
+### PUT d'un article inexistant (devrait retourner 404)
+PUT {{baseUrl}}/api/articles/article-inexistant
+Content-Type: {{contentType}}
+
+{
+  "title": "Test",
+  "content": "Test"
+}
+
+### DELETE d'un article inexistant (devrait retourner 404)
+DELETE {{baseUrl}}/api/articles/article-inexistant
+Content-Type: {{contentType}}
+
+### ===========================================
+### Instructions d'utilisation :
+### ===========================================
+### 1. Lancez le serveur : npm run dev
+### 2. Ouvrez ce fichier dans VSCode
+### 3. Installez l'extension "REST Client" si ce n'est pas déjà fait
+### 4. Cliquez sur "Send Request" au-dessus de chaque requête
+### 5. Pour les tests avec [ARTICLE_ID], créez d'abord un article avec POST
+###    puis copiez l'ID retourné dans les requêtes GET/PUT/DELETE 
