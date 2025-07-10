@@ -1,8 +1,7 @@
-L’erreur **Prisma Client Error**  apparaît dans **Prisma Studio** lorsque nous essayons d’ajouter un enregistrement. Voici une explication complète et précise du message :
-
----
 
 # **Erreur détectée**
+
+L’erreur **Prisma Client Error**  apparaît dans **Prisma Studio** lorsque nous essayons d’ajouter un enregistrement. Voici une explication complète et précise du message :
 
 ```
 Prisma Client Error
@@ -10,7 +9,7 @@ Unable to run script
 Invalid STUDIO_EMBED_BUILD ...
 ```
 
----
+
 
 # **Cause principale**
 
@@ -24,11 +23,11 @@ L’erreur provient du fait que **Prisma Studio** tente d'exécuter du code clie
   C:\Users\Haythem\Downloads\G1266-main\next-01-projet01-in-memory\
   ```
 
----
 
-# **Solutions possibles**
 
-#### ✅ 1. Réinstalle proprement Prisma
+# **Solutions**
+
+####  1. Réinstalle proprement Prisma
 
 Dans le dossier de ton projet :
 
