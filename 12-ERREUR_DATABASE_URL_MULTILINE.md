@@ -76,7 +76,7 @@ us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 Get-Content .env
 
 # Résultat montrant la cassure
-DATABASE_URL="postgresql://neondb_owner:npg_z1cN6qYxVFMB@ep-sparkling-hill-ae6xwlzp-pooler.c-2.
+DATABASE_URL="postgresql://neondb_owner:npg_z1cNfdjdgdhdnmfjjhjhfjfha234qYxVFMB@ep-sparkling-hill-ae6xwlzp-pooler.c-2.
 us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 ```
 
