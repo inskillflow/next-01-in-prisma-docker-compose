@@ -8,6 +8,7 @@
    * PostgreSQL Server
    * **pgAdmin 4**
    * Command Line Tools
+   * Quand nous vous demandons un mot de passe, spécifiez le mot de passe suivant : postgres
 3. Choisis un **mot de passe superutilisateur** pour `postgres` (note-le).
 4. **Port** : 5432 (par défaut).
 5. Termine l’installation (tu peux ignorer Stack Builder).
@@ -25,7 +26,7 @@
      * Port : `5432`
      * Maintenance DB : `postgres`
      * Username : `postgres`
-     * Password : *(ton mot de passe défini à l’installation)*
+     * Password : *(ton mot de passe défini à l’installation)* - par exemple postgres
      * Coche “Save password”
 
 > Tu es maintenant connecté à ton serveur local.
