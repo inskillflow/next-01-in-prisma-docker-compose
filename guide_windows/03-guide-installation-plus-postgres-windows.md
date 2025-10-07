@@ -2,7 +2,7 @@
 
 **(Modules Serveur, Client et Interface pgAdmin 4)**
 
-## Remarque 
+## Remarque avant de commencer
 ­- PostgreSQL évolue régulièrement, mais son mode d’installation, sa structure interne et son architecture logicielle restent remarquablement stables d’une version majeure à l’autre. Ce guide est rédigé à partir de la **version 16 de PostgreSQL**, actuellement largement utilisée dans les environnements professionnels et éducatifs. Cependant, les procédures décrites ici — qu’il s’agisse de l’installation, de la configuration des modules serveur et client, du démarrage via pgAdmin ou de l’utilisation en ligne de commande — demeurent valables pour les versions **15, 17, 18** et ultérieures. Les différences entre versions concernent généralement des optimisations internes (performances, sécurité, prise en charge du chiffrement, améliorations du planificateur de requêtes, etc.) et non la logique d’exploitation ou la gestion des services Windows. En pratique, que vous installiez PostgreSQL 15, 16, 17 ou 18, vous suivrez **exactement les mêmes étapes**, les noms de services, répertoires (`C:\Program Files\PostgreSQL\<version>`), et outils (`psql`, `pg_ctl`, `pgAdmin 4`) demeurant identiques dans leur fonctionnement.
 
 
