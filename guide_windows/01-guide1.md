@@ -137,13 +137,18 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: ['error', 'warn'], // utile en dev
-  })
+// Debug: Hardcode URL temporairement
+const DATABASE_URL = process.env.DATABASE_URL || "postgresql://app_user:app_password@localhost:5432/articles_db?schema=public"
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  datasources: {
+    db: {
+      url: DATABASE_URL
+    }
+  }
+})
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma 
 ```
 
 ---
