@@ -77,15 +77,15 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO app_user;
 
 ### 4.1 Installer Prisma
 
-#### 4.4.1. D'abord cloner le projet 
+#### 4.1.1. D'abord cloner le projet 
 
 ```bash
-git clone https://github.com/hrhouma1/next-01-projet03-in-prisma.git
-cd next-01-projet03-in-prisma
+git clone https://github.com/hrhouma1/next-01-projet03-in-prisma.git next-01-in-prisma-windows
+cd next-01-in-prisma-windows
 code . 
 ```
 
-#### 4.4.2. Installer prisma
+#### 4.1.2. Installer prisma
 
 
 ```bash
