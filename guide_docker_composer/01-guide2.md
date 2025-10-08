@@ -616,4 +616,7 @@ Vous avez maintenant :
 * ✅ **Tests REST** prêts à l’emploi
 * ✅ **Outils de maintenance/dépannage** pour évoluer sereinement
 
-Si vous voulez, je peux aussi vous fournir une variante **Compose “prod”** (Postgres + sauvegardes automatiques, readiness probes plus strictes) ou un **Makefile** avec cibles `db-up`, `db-down`, `migrate`, `studio`, etc.
+
+# Annexe :
+
+- Pensez à une variante **Compose “prod”** (Postgres + sauvegardes automatiques, readiness probes plus strictes) ou un **Makefile** avec cibles `db-up`, `db-down`, `migrate`, `studio`, etc.
