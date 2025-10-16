@@ -1,0 +1,2352 @@
+
+Guide de travail :
+
+- https://github.com/hrhouma1/next-01-projet03-in-prisma/blob/main/guide_docker_composer/01-guide2.md (GUIDE)
+- https://github.com/hrhouma1/next-01-projet03-in-prisma/blob/main (PROJET)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================================================================================================================
+ÉTAPE 1 - Connexion à votre VM via SSH
+================================================================================================================
+--------------------------------------------
+EXIGENCE # 1 (SUR LA VM LINUX)
+--------------------------------------------
+
+- Il faut installer openssh-server dans la machine
+
+su (ou sudo -s)
+apt update
+apt install openssh-server -y
+systemctl status ssh (pour quitter CTL + c ou :q)
+systemctl start ssh
+systemctl enable ssh
+systemctl status ssh 
+
+
+
+--------------------------------------------
+EXIGENCE # 2 (SUR LA VM LINUX)
+--------------------------------------------
+
+Choisir un deux choix suivants:
+
+Choix 1 ==> 1 seule carte réseau en bridged.
+Choix 2 ==> 2 cartes réseaux (La première est une carte NAT et la deuxième est une carte host-only adapter_
+N.B: Il faut fermer la machine aavant d'ajouter une nouvelle carte
+Comment ajouter une nouvelle carte :
+	==> Sélection la VM
+	==> Settings
+	==> Network
+	==> Adapter 2
+	==> Cocher Enable Network Adapter 
+	
+Pour résumer: 
+Soit 1 carte BRIDGED
+Soit 2 cartes (NAT + HOST-ONLY ADAPTER)
+
+
+--------------------------------------------
+EXIGENCE # 3 (SUR LA MACHINE HOST WINDOWS)
+--------------------------------------------
+
+D'abord sur le terminal de votre VM linux,écrire la commande suivante:
+- ip a ==> 
+
+- Si vous utilisez seule carte (bridged), récupérez les infos de cette ligne (enp0s3):
+
+		2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+			link/ether 08:00:27:52:4c:69 brd ff:ff:ff:ff:ff:ff
+======>     inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic noprefixroute enp0s3
+
+
+- Si vous utilisez deux cartes (La deuxième carte est Host-only adapter), récupérez les infos de cette ligne (enp0s8):
+
+
+		3: enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+			link/ether 08:00:27:48:c7:c9 brd ff:ff:ff:ff:ff:ff
+======> 	inet 192.168.177.3/24 brd 192.168.177.255 scope global dynamic noprefixroute enp0s8
+
+
+
+Ouvrir la ligne de commande windows et saisir :
+
+ssh <nom-de-l-utilisateur>@<IP>
+Par exemple : ssh eleve@192.168.177.3
+
+
+su (ou sudo -s) 
+whoami
+pwd
+apt update 
+
+
+
+
+
+
+
+================================================================================================================
+ÉTAPE 2 - Installation de docker et de docker-compose
+================================================================================================================
+
+Instrutions sur le site officiel de DOCKER : 
+- https://docs.docker.com/engine/install/ubuntu/
+
+
+pwd  	==> /home/eleve# 
+whoami  ==> root
+cd Desktop/
+mkdir installer-docker
+cd installer-docker
+apt install tree
+tree -d 
+apt update
+apt install git 
+git --version
+git clone https://github.com/inskillflow/install-docker-ubuntu2204.git
+cd install-docker-ubuntu2204/
+ls
+chmod +x install-docker.sh 
+ls -la
+sh install-docker.sh  (ou ./install-docker.sh)
+apt install docker-compose
+docker --version
+docker-compose --version
+
+-----------------------
+Pour supprimer un dossier :
+-----------------------
+rm -rf dossier
+
+
+-----------------------
+Vérifications finales :
+-----------------------
+
+docker --version
+docker-compose --version  (sinon apt install docker-compose pour celles et ceux qui utilisent Ubuntu 22.04)
+docker compose version (pour Ubuntu 24.04)
+
+
+
+
+
+
+
+
+
+================================================================================================================
+ÉTAPE 3 - Cloner le projet
+================================================================================================================
+
+cd /home/eleve/Desktop
+git clone https://github.com/hrhouma1/next-01-projet03-in-prisma.git next-01-in-prisma-linux
+cd next-01-in-prisma-linux
+ls
+tree -d
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+================================================================================================================
+ÉTAPE 4 - Installer vscode
+================================================================================================================
+
+4.1 - Transformer votre user en super utilisateur (Ajouter eleve en groupe sudo)
+
+
+==> 1. Vérifier si l’utilisateur existe (Il faut le faire en root, whoami ==> root)
+		id eleve
+
+==> 2. S’il n’existe pas :
+		sudo adduser eleve
+
+==> 3. Ajouter l’utilisateur au groupe sudo
+		sudo usermod -aG sudo eleve
+
+==> 4. Vérifier l’ajout
+		groups eleve
+
+==> 5. Tester les droits sudo
+		su - eleve
+		whoami 			==> eleve
+		sudo whoami		==> root
+
+==> 6. (Optionnel) Vérifier le fichier sudoers
+	sudo visudo
+Ligne à vérifier :
+	%sudo   ALL=(ALL:ALL) ALL
+
+
+
+4.2. Instrutions sur le site officiel de VSCODE : 
+
+- https://code.visualstudio.com/docs/setup/linux
+
+- Allez au projet et ouvrir vscode 
+cd /home/eleve/Desktop/next-01-in-prisma-linux
+
+
+4.3. Ouvrir le projet avec VSCODE: 
+
+  cd /home/eleve/Desktop/next-01-in-prisma-linux/
+  code .  
+  
+----------------------------------  
+Remarque très importante : 
+----------------------------------
+
+ - Signfication des cadenas partout dans le desktop sur les dossiers
+ 
+ Les icônes de cadenas sur tes dossiers (dossiers dans le Desktop: installer-docker, next-01-in-prisma-linux, ...) indiquent qu’ils appartiennent à un autre utilisateur (probablement root) 
+ et que ton utilisateur normal (eleve) n’a pas les droits d’écriture.
+ 
+ ls -l ~/Desktop  ==> drwxr-xr-x  root   root   4096 oct  8 12:00 installer-docker
+ sudo chown -R eleve:eleve ~/Desktop
+ ls -l ~/Desktop  ==> drwxr-xr-x  eleve  eleve  4096 oct  8 12:00 installer-docker
+
+
+
+
+Finalement, saisir :
+
+
+  cd /home/eleve/Desktop/next-01-in-prisma-linux/
+  code .  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================================================================================================================
+ÉTAPE 5 - DOCKER COMPOSE – Postgres et pgAdmin - Instrcutions à partir de la PARTIE 2 du document ci-bas DOCKER COMPOSE – Postgres (et pgAdmin en option)
+================================================================================================================
+
+https://github.com/hrhouma1/next-01-projet03-in-prisma/blob/main/guide_docker_composer/01-guide2.md
+
+
+- Ajouter à la racine de votre projet ce docker-compose (FIHIER DANS LA PARTIE 2 ici):
+
+https://github.com/hrhouma1/next-01-projet03-in-prisma/blob/main/guide_docker_composer/01-guide2.md
+
+
+
+cd /home/eleve/Desktop/next-01-in-prisma-linux/
+touch docker-compose.yaml
+nano docker-compose.yaml (copier le contenu)
+sudo docker-compose up -d  (ou sudo docker compose up -d)
+sudo docker ps 
+
+
+sudo docker ps  ==> Il faut vérifier que le statut des deux services est à UP
+
+CONTAINER ID   IMAGE                COMMAND                  CREATED              STATUS                   PORTS                                              NAMES
+5447bca8c400   dpage/pgadmin4:8     "/entrypoint.sh"         About a minute ago   Up About a minute        443/tcp, 0.0.0.0:5050->80/tcp, [::]:5050->80/tcp   pgadmin
+d37923ade568   postgres:16-alpine   "docker-entrypoint.s…"   2 minutes ago        Up 2 minutes (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp        pg-next-local
+
+
+- Pour accéder à Pgadmin ==> http://localhost:5050 (admin@example.com/admin123)
+- Pour accéder à Postgres , utilisez le port 5432 (via lignes de commandes)
+
+
+Instrcutions pour ajouter les bases de données manuellement: 
+http://localhost:5050 
+
+
+-----------------------------------------------------------------------------------------------------------------------
+TRÈS IMPORTANT :  Pourquoi je ne vois pas de serveur dans Pgadmin ?
+-----------------------------------------------------------------------------------------------------------------------
+
+Parce que pgAdmin n’"auto-découvre" pas les bases. 
+L’admin créé par PGADMIN_DEFAULT_EMAIL/PASSWORD ne crée aucun serveur : il faut l’enregistrer manuellement.
+
+==> Ce qu’il faut faire (avec votre docker-compose.yml)
+
+Dans pgAdmin http://localhost:5050:
+
+1. Add New Server
+
+   - General → Name : local-postgres
+2. Connection
+
+   - Host name/address : db  ← (le nom du service Docker, pas localhost)
+   - Port : 5432
+   - Maintenance database : articles_db (ou postgres)
+   - Username : app_user
+   - Password : app_password
+   - coche Save Password → Save
+
+> Important : comme pgAdmin tourne en container, localhost pointe vers le container pgAdmin lui-même. Pour joindre Postgres dans la même stack, on utilise le nom du service (db). Le mapping 5432:5432 ne change rien pour les connexions entre containers : à l’intérieur, Postgres écoute toujours sur 5432.
+
+==> Vérifiez si ça ne connecte pas
+
+- Status des services :
+
+
+  docker compose ps
+  docker logs -f pg-next-local
+
+- Depuis pgAdmin (container), tester la résolution :
+
+
+  docker exec -it pgadmin ping -c1 db
+  docker exec -it pgadmin bash -lc "apt-get update && apt-get install -y postgresql-client && pg_isready -h db -p 5432 -U app_user -d articles_db"
+
+- Si vouz changez le port côté hôte (ex. 5433:5432), dans pgAdmin ça reste 5432 (port interne du container Postgres).
+
+Après avoir enregistré ce serveur, il apparaîtra sous Servers et tu pourras t’y connecter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================================================================================================================
+ÉTAPE 6 - Travailler avec l'ORM PRISMA (méthode 2)
+================================================================================================================
+
+-----------------------------------------------------------------------------------------------------------------------
+6.1. Installation de node - méthode 1 (NON RECOMMANDÉ POUR UBUNTU2204)
+-----------------------------------------------------------------------------------------------------------------------
+
+sudo apt update
+sudo apt install -y nodejs npm
+node -v
+npm -v
+cd /home/eleve/Desktop/next-01-in-prisma-linux/
+
+Si nous travaillons avec Ubuntu 2204, le gestionnaire de dépendances apt installera une ancienne version de node !
+
+
+-----------------------------------------------------------------------------------------------------------------------
+6.2. Installation de node - méthode 2 (RECOMMANDÉ POUR TOUS INCLUANT UBUNTU2204 et UBUNTU2404)
+-----------------------------------------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 6.2.1. installer nvm si besoin
+-----------------------------------------------------------------------------------------------------------------------
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 6.2.2. installer et utiliser Node LTS (20)
+-----------------------------------------------------------------------------------------------------------------------
+nvm install --lts
+nvm use --lts
+node --version
+npm --version
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 6.2.3.  installer prisma
+-----------------------------------------------------------------------------------------------------------------------
+cd /home/eleve/Desktop/next-01-in-prisma-linux/
+npm install prisma @prisma/client
+npm install 
+npx prisma init
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 6.2.4.  configure la connexion PostgreSQL
+-----------------------------------------------------------------------------------------------------------------------
+nano .env  ==> Allez à la partie 4 et copier la ligne de DATABASE_URL
+
+PARTIE 4 : Configuration .env (Docker Compose)
+
+# Connexion Postgres via le port publié par Docker sur l’hôte
+DATABASE_URL="postgresql://app_user:app_password@localhost:5432/articles_db?schema=public"
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 6.2.5.  effectuer la première migration et vérifier dans Pgadmin
+-----------------------------------------------------------------------------------------------------------------------
+npx prisma init ==> Nous avons déja le dossier créé
+ ERROR  A folder called prisma already exists in your project.
+        Please try again in a project that is not yet using Prisma
+		
+npx prisma generate	
+npx prisma migrate dev --name init  
+	==> Ici, vous pouvez vérifier http://localhost:5050  pour voir si la base de donnée a été ajouté.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================================================================================================================
+ÉTAPE 7 - Vérifications de la création de la BD et des tables
+================================================================================================================
+
+Étant donné que le code complet a été cloné, les parties 5 à 7 peuvent être ignorées.
+
+https://github.com/hrhouma1/next-01-projet03-in-prisma/blob/main/guide_docker_composer/01-guide2.md
+
+-----------------------------------------------------------------------------------------------------------------------
+7.1) Depuis Docker (sans rien installer sur l’hôte)
+-----------------------------------------------------------------------------------------------------------------------
+
+# Ouvrir un shell psql dans le conteneur Postgres
+docker compose exec -it db psql -U app_user -d articles_db
+
+# (ou avec le nom exact du conteneur)
+docker exec -it pg-next-local psql -U app_user -d articles_db
+
+-----------------------------------------------------------------------------------------------------------------------
+7.2) OPTIONNEL - Depuis l’hôte (psql local)
+-----------------------------------------------------------------------------------------------------------------------
+
+# Installer le client psql si besoin
+sudo apt-get update && sudo apt-get install -y postgresql-client
+
+# Se connecter via le port publié par Docker
+PGPASSWORD=app_password psql -h localhost -p 5432 -U app_user -d articles_db
+
+-----------------------------------------------------------------------------------------------------------------------
+7.3) Commandes psql essentielles (une fois connecté)
+-----------------------------------------------------------------------------------------------------------------------
+
+-- infos connexion courante
+\conninfo
+
+-- lister bases / rôles / extensions / schémas / tables
+\l
+\du
+\dx
+\dn
+\dt
+\dt public.
+
+-- décrire une table (structure, index)
+\d articles
+\d+ articles
+
+-- requêtes rapides
+SELECT current_database(), current_user;
+SELECT - FROM articles ORDER BY createdAt DESC LIMIT 10;
+
+-- changer de base
+\c articles_db
+
+-- montrer le search_path
+SHOW search_path;
+
+-- exécuter un fichier SQL
+\i /chemin/script.sql
+
+-- activer le timing et élargir l’affichage
+\timing on
+\x on
+
+-- quitter
+\q
+
+
+
+
+
+
+
+================================================================================================================
+AJOUT DE DONNÉES
+================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================================================================================================================
+ÉTAPE 8 - Vérifications de la persistence des données
+================================================================================================================
+
+Considèrons ce fichier : 
+
+-----------------------------------------------------------------------------------------------------------------------
+8.1) docker-compose initial
+-----------------------------------------------------------------------------------------------------------------------
+
+
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: pg-next-local
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: articles_db
+      # Force l'encodage/locale
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d articles_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # (Optionnel) UI d’administration
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  pgadmin_data:
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.2) explication
+-----------------------------------------------------------------------------------------------------------------------
+
+
+Notre docker-compose.yml persiste bien les données via les volumes nommés pgdata et pgadmin_data.
+Mais attention aux mots :
+
+==> 8.2.1 - Persister = Docker garde les volumes entre arrêts/redéploiements (docker compose down).
+==> 8.2.2 - Sauvegarder = faire une copie (backup) ailleurs. Compose ne fait pas de backup automatique.
+
+==> 8.2.3 - Observons la dernière partie du fichier yaml.
+
+
+volumes:
+  pgdata:
+  pgadmin_data:
+
+
+
+==> Cette partie crée des volumes nommés gérés par Docker.
+ Montés dans les services :
+
+   pgdata → /var/lib/postgresql/data (données PostgreSQL)
+   pgadmin_data → /var/lib/pgadmin (config pgAdmin)
+
+
+
+==> 8.2.4 - Cycle de vie (à retenir)
+
+ docker compose down → supprime les conteneurs, conserve les volumes ✅ (tes données restent).
+ docker compose down -v → supprime aussi les volumes ❌ (tes données sont effacées).
+ docker rm -f <container> → ne touche pas aux volumes.
+ docker system prune -a --volumes → efface les volumes (donc les données) ❌.
+
+
+
+==> 8.2.5 -  Vérifier que ça persiste
+
+-----------------------------------------------------------------------------------------------------------------------
+# 1) Insérer des lignes
+-----------------------------------------------------------------------------------------------------------------------
+
+# Ligne 1
+docker compose exec -it db psql -U app_user -d articles_db -c 'INSERT INTO "articles" ("title","content") VALUES (''t'',''c'');'
+
+# Ligne 2
+docker compose exec -T db psql -U app_user -d articles_db <<'SQL'
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+VALUES ('cm_test_4','titre 4','contenu 4', now(), now());
+SELECT COUNT(*) FROM "articles";
+SQL
+
+# Ligne 3
+docker compose exec -T db psql -U app_user -d articles_db <<'SQL'
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+VALUES ('cm_test_5','titre 5','contenu 5', now(), now());
+SELECT COUNT(*) FROM "articles";
+SQL
+
+
+docker compose exec -it db psql -U app_user -d articles_db
+-- (tu es dans psql) :
+
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+VALUES ('cm_test_6','t','c', now(), now());
+
+
+SELECT COUNT(*) FROM "articles";
+
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+VALUES ('cm_test_7','t','c', now(), now());
+
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+VALUES ('cm_test_8','t','c', now(), now());
+
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+VALUES ('cm_test_9','t','c', now(), now());
+
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+VALUES ('cm_test_10','t','c', now(), now());
+
+SELECT COUNT(*) FROM "articles";
+
+
+\q   -- tape \q tout seul sur sa ligne pour quitter
+
+
+
+# Compter
+docker exec -i pg-next-local psql -U app_user -d articles_db <<'SQL'
+SELECT COUNT(*) FROM "articles";
+SQL
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 2) Arrêter/redémarrer SANS -v
+-----------------------------------------------------------------------------------------------------------------------
+
+docker compose down
+docker compose up -d
+
+-----------------------------------------------------------------------------------------------------------------------
+# 3) Compter
+-----------------------------------------------------------------------------------------------------------------------
+docker compose exec -it db psql -U app_user -d articles_db -c 'SELECT COUNT(*) FROM "articles";'
+# -> le nombre doit être identique
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 4) Astuce : figer le nom du volume (recommandé)
+-----------------------------------------------------------------------------------------------------------------------
+
+Compose préfixe souvent le volume avec le nom du dossier projet. 
+Pour éviter les "fausses pertes" si tu changes de dossier/projet, donnez un nom explicite :
+
+
+REMPLACEZ 
+
+volumes:
+  pgdata:
+  pgadmin_data:
+
+PAR 
+
+volumes:
+  pgdata:
+    name: next_articles_pgdata
+  pgadmin_data:
+    name: next_pgadmin_data
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 5) Nouveau docker-compose 
+-----------------------------------------------------------------------------------------------------------------------
+
+
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: pg-next-local
+    environment:
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: articles_db
+      # Force l'encodage/locale
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d articles_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # (Optionnel) UI d’administration
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+    name: next_articles_pgdata
+  pgadmin_data:
+    name: next_pgadmin_data
+
+
+
+
+
+
+docker-compose down -v 
+docker-compose up -d 
+docker compose exec -it db psql -U app_user -d articles_db -c 'SELECT COUNT(*) FROM "articles";'
+docker-compose down
+rm -rf docker-compose.yaml 
+nano docker-compose.yaml
+docker-compose up -d 
+
+
+1) Les voir (liste)
+docker volume ls
+# tu dois voir :
+# local   next_articles_pgdata
+# local   next_pgadmin_data
+
+
+2) Chemin exact sur la VM (Mountpoint)
+docker volume inspect next_articles_pgdata | jq -r '.[0].Mountpoint'
+# → /var/lib/docker/volumes/next_articles_pgdata/_data
+
+docker volume inspect next_pgadmin_data | jq -r '.[0].Mountpoint'
+# → /var/lib/docker/volumes/next_pgadmin_data/_data
+
+
+
+3) Vous pouvez aussi lister directement :
+sudo ls -lah /var/lib/docker/volumes/next_articles_pgdata/_data
+sudo ls -lah /var/lib/docker/volumes/next_pgadmin_data/_data
+
+
+
+3) Important sur down vs down -v
+docker-compose down ou docker compose down ➜ conserve les volumes (les données restent).
+docker-compose down -v ➜ supprime aussi les volumes → les dossiers ci-dessus sont effacés ➜ données perdues.
+
+docker-compose down -v          # ❌ détruit next_articles_pgdata et next_pgadmin_data
+docker-compose up -d            # ✅ recrée des volumes vides portant le même nom
+docker compose exec ... COUNT   # ➜ 0 (normal, volume neuf)
+docker-compose down             # ➜ garde les volumes recréés
+rm -rf docker-compose.yaml
+nano docker-compose.yaml        # si tu remets EXACTEMENT les mêmes noms…
+docker-compose up -d            # ➜ les volumes sont réutilisés (ou recréés s’ils n’existent plus)
+
+
+4) Vérifier que le conteneur monte bien le volume
+docker compose exec -it db mount | grep postgresql
+# doit montrer /var/lib/postgresql/data monté depuis next_articles_pgdata
+
+
+5) Rappel rapid-fire
+
+Nos volumes nommés (avec name:) vivent sur la VM sous
+/var/lib/docker/volumes/<nom>/_data
+
+Avec nos noms actuels :
+=======> next_articles_pgdata → /var/lib/docker/volumes/next_articles_pgdata/_data
+=======> next_pgadmin_data → /var/lib/docker/volumes/next_pgadmin_data/_data
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+RECOMMENDATIONS:
+-----------------------------------------------------------------------------------------------------------------------
+=======> Pour sauver tes données, faites un dump (ex. pg_dump) — Compose ne fait pas de backup.
+=======> Évite down -v sauf si tu veux tout réinitialiser.
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+ALIAS:
+-----------------------------------------------------------------------------------------------------------------------
+alias dvl='docker volume ls'
+alias dvp='docker volume inspect'
+
+Et un check express :
+dvl
+dvp next_articles_pgdata | jq -r '.[0].Mountpoint'
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3) Et les sauvegardes (backups) ?
+-----------------------------------------------------------------------------------------------------------------------
+
+Le down -v a effacé le volume, donc ta base est vide.
+Tu n’as pas besoin de tout recréer, mais tu dois réappliquer le schéma (migrations) et éventuellement regénérer le client Prisma.
+
+#Chemin rapide (DB vierge après -v)
+
+Depuis la racine du projet :
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.1. Relancer la stack
+-----------------------------------------------------------------------------------------------------------------------
+
+
+docker compose up -d
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.2. (Optionnel) recréer explicitement la DB si elle n’existe pas
+-----------------------------------------------------------------------------------------------------------------------
+
+docker compose exec -T db psql -U app_user -d postgres -c '\l'   # voir si articles_db existe
+docker compose exec -T db createdb -U app_user articles_db        # si absente
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.3. Appliquer les migrations Prisma (recrée tables/contraintes)
+-----------------------------------------------------------------------------------------------------------------------
+
+- Si tu es en dev et que tu as le dossier prisma/migrations/ :
+
+
+npx prisma migrate dev
+docker compose exec -T db psql -U app_user -d postgres -c '\l' 
+
+
+- Si tu es en "prod" (pas d’interaction) :
+
+
+npx prisma migrate deploy
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.4. Regénérer le client Prisma (si tu as touché schema.prisma ou réinstallé deps)
+-----------------------------------------------------------------------------------------------------------------------
+
+npx prisma generate
+
+
+> generate ne modifie pas la base, il régénère seulement le client JS/TS.
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.5. (Optionnel) Restaure tes données si tu as un dump
+-----------------------------------------------------------------------------------------------------------------------
+
+# si tu as backup/articles_2025-10-08.dump
+docker compose exec -T db pg_restore -U app_user -d articles_db < backup/articles_2025-10-08.dump
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.6. (Optionnel) reseed / tests
+-----------------------------------------------------------------------------------------------------------------------
+
+# ex: insérer vite 100 lignes
+docker compose exec -T db psql -U app_user -d articles_db -c \
+"INSERT INTO \"articles\" (\"id\",\"title\",\"content\",\"createdAt\",\"updatedAt\")
+ SELECT 'seed_'||gs, 'Title '||gs, 'Content '||gs, now(), now() FROM generate_series(1,100) gs;"
+
+
+ou via tes endpoints REST (tests.http).
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.7. CONCLUSION
+-----------------------------------------------------------------------------------------------------------------------
+
+* -v a supprimé les données → réapplique tes migrations (npx prisma migrate dev), puis optionnellement npx prisma generate.
+* Si tu as un dump, restaure-le après les migrations.
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.8. Créer le dossier et faire un dump
+-----------------------------------------------------------------------------------------------------------------------
+
+
+# à la racine de ton projet
+mkdir -p backup
+
+# Dump logique (format custom .dump) vers le dossier hôte
+docker compose exec -T db pg_dump -U app_user -d articles_db -F c \
+  > backup/articles_$(date +%F).dump
+
+# Vérifier
+ls -lh backup/
+
+
+> L’erreur No such file or directory venait du fait que backup/ n’existait pas.
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.9.  Restaurer depuis un fichier de dump
+-----------------------------------------------------------------------------------------------------------------------
+
+==> Cas A — restaurer par-dessus (en recréant la DB vide)
+
+
+# (optionnel) supprimer puis recréer la base
+docker compose exec -T db dropdb  -U app_user articles_db || true
+docker compose exec -T db createdb -U app_user articles_db
+
+# restaurer
+docker compose exec -T db pg_restore -U app_user -d articles_db \
+  < backup/articles_YYYY-MM-DD.dump
+
+
+==> Cas B — restaurer dans une autre base (pour tester)
+
+
+docker compose exec -T db createdb -U app_user articles_clone
+docker compose exec -T db pg_restore -U app_user -d articles_clone \
+  < backup/articles_YYYY-MM-DD.dump
+
+
+==> Vérifier
+
+
+docker compose exec -T db psql -U app_user -d articles_db   -c 'SELECT COUNT(*) FROM "articles";'
+docker compose exec -T db psql -U app_user -d articles_clone -c 'SELECT COUNT(*) FROM "articles";'
+
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.10.  Autres variantes utiles
+-----------------------------------------------------------------------------------------------------------------------
+
+- Tout sauvegarder (rôles + DBs) :
+
+
+  docker compose exec -T db pg_dumpall -U app_user > backup/all_$(date +%F).sql
+  
+- Planifier un backup quotidien simple (cron de l’hôte) :
+
+
+  (crontab -l 2>/dev/null; echo '0 2 * * * cd /home/eleve/Desktop/next-01-in-prisma-linux && docker compose exec -T db pg_dump -U app_user -d articles_db -F c > backup/articles_$(date +\%F).dump') | crontab -
+  
+
+-----------------------------------------------------------------------------------------------------------------------
+8.3.11. Astuce chemins
+-----------------------------------------------------------------------------------------------------------------------
+
+Si vous voulez être sûr du chemin, utilise un chemin absolu :
+
+
+docker compose exec -T db pg_dump -U app_user -d articles_db -F c \
+  > "$(pwd)/backup/articles_$(date +%F).dump"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================================================================================================================
+# Étape 9 — Démontrer persistance vs éphémère (PostgreSQL + Docker)
+================================================================================================================
+
+## 0) Préparer le volume nommé (recommandé)
+
+Dans docker-compose.yml, force un nom explicite pour réutiliser le même volume entre stacks/projets :
+
+
+volumes:
+  pgdata:
+    name: next_articles_pgdata
+  pgadmin_data:
+
+
+> Ainsi, même si tu changes de dossier/compose project, en réutilisant next_articles_pgdata, tu retrouves les mêmes données.
+
+-----------------------------------------------------------------------------------------------------------------------
+## 1) Injecter "beaucoup" de données (via API)
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+### Option A — Bash + curl (rapide)
+-----------------------------------------------------------------------------------------------------------------------
+
+
+# crée 50 articles
+for i in $(seq 1 50); do
+  curl -s -X POST http://localhost:3000/api/articles \
+    -H "Content-Type: application/json" \
+    -d "{\"title\":\"Article #$i\",\"content\":\"Contenu auto $i\"}" >/dev/null
+done
+
+# vérif rapide
+curl -s http://localhost:3000/api/articles | wc -c     # taille JSON
+curl -s http://localhost:3000/api/articles | jq 'length'
+
+
+-----------------------------------------------------------------------------------------------------------------------
+### Option B — HTTPie (plus lisible)
+-----------------------------------------------------------------------------------------------------------------------
+
+
+for i in $(seq 1 50); do
+  http POST :3000/api/articles title="Article #$i" content="Contenu auto $i" >/dev/null
+done
+http :3000/api/articles | jq 'length'
+
+
+-----------------------------------------------------------------------------------------------------------------------
+### Option C — Prisma seeder (Node)
+-----------------------------------------------------------------------------------------------------------------------
+
+> package.json :
+
+json
+{
+  "scripts": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
+
+
+> prisma/seed.ts :
+
+
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
+async function main() {
+  const batch = Array.from({ length: 50 }).map((_, i) => ({
+    title: Article #${i+1},
+    content: Contenu auto ${i+1}
+  }));
+  await prisma.article.createMany({ data: batch });
+  const count = await prisma.article.count();
+  console.log('Total articles:', count);
+}
+main().finally(() => prisma.$disconnect());
+
+
+-----------------------------------------------------------------------------------------------------------------------
+> Puis :
+-----------------------------------------------------------------------------------------------------------------------
+
+
+npm run seed
+
+
+-----------------------------------------------------------------------------------------------------------------------
+### Vérif côté DB (source de vérité)
+-----------------------------------------------------------------------------------------------------------------------
+
+
+docker compose exec -it db psql -U app_user -d articles_db -c "SELECT COUNT(*) FROM articles;"
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+## 2) Panne simulée : arrêt/déstruction des conteneurs (données PERSISTENTES)
+-----------------------------------------------------------------------------------------------------------------------
+
+Containers down, volume conservé ⇒ les données restent.
+
+-----------------------------------------------------------------------------------------------------------------------
+# "panne" de l’app ou de la DB
+-----------------------------------------------------------------------------------------------------------------------
+
+docker compose down              # détruit les conteneurs, garde les volumes
+docker compose up -d             # relance
+
+# vérifie : le compte doit être identique
+docker compose exec -it db psql -U app_user -d articles_db -c "SELECT COUNT(*) FROM articles;"
+
+
+Tu peux aussi tuer uniquement Postgres :
+
+
+docker rm -f pg-next-local       # supprime le conteneur DB
+docker compose up -d             # le conteneur est recréé, le volume ré-attaché
+
+
+-----------------------------------------------------------------------------------------------------------------------
+## 3) Données ÉPHÉMÈRES : suppression du volume
+-----------------------------------------------------------------------------------------------------------------------
+
+Containers + volumes supprimés ⇒ perte des données.
+
+
+docker compose down -v           # ATTENTION : supprime le volume next_articles_pgdata
+docker compose up -d
+# la table existe si migrations rejouées ; le contenu, lui, a disparu
+docker compose exec -it db psql -U app_user -d articles_db -c "SELECT COUNT(*) FROM articles;"
+
+
+-----------------------------------------------------------------------------------------------------------------------
+## 4) "Copie" qui pointe sur les mêmes données
+-----------------------------------------------------------------------------------------------------------------------
+
+Le secret : réutiliser le même volume nommé.
+
+> Dans un autre dossier/projet Compose, déclare :
+
+
+  volumes:
+    pgdata:
+      name: next_articles_pgdata
+  
+> Lance un Postgres alternatif qui montera le même volume :
+
+
+  docker compose up -d
+  docker compose exec -it db psql -U app_user -d articles_db -c "SELECT COUNT(*) FROM articles;"
+  
+
+Vous accèdez à la même data.
+
+> Si vous voulez une vraie copie (snapshot), fais pg_dump / pg_restore (backup → nouveau volume).
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# tests.http — Script d’API "rempli + panne + vérifs"
+-----------------------------------------------------------------------------------------------------------------------
+
+> Compatible VS Code REST Client (avec capture d’ID).
+
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### 0) Reset (si tu exposes un DELETE all)
+DELETE {{baseUrl}}/api/articles
+
+### 1) Create a bunch (5 démos — pour charge réelle, utilise Bash)
+# @name create1
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Article #1",
+  "content": "Contenu 1"
+}
+
+# @name create2
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Article #2",
+  "content": "Contenu 2"
+}
+
+# @name create3
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Article #3",
+  "content": "Contenu 3"
+}
+
+# @name create4
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Article #4",
+  "content": "Contenu 4"
+}
+
+# @name create5
+POST {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+{
+  "title": "Article #5",
+  "content": "Contenu 5"
+}
+
+### 2) List all (compter côté client)
+GET {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+### 3) Utiliser l'ID du #1 pour CRUD
+@article_id = {{create1.response.body.id}}
+
+### GET by ID
+GET {{baseUrl}}/api/articles/{{article_id}}
+Content-Type: {{contentType}}
+
+### PUT (update)
+PUT {{baseUrl}}/api/articles/{{article_id}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Article #1 (MAJ)",
+  "content": "Contenu 1 mis à jour"
+}
+
+### DELETE by ID
+DELETE {{baseUrl}}/api/articles/{{article_id}}
+
+### 4) Confirmer reste (devrait rester 4)
+GET {{baseUrl}}/api/articles
+Content-Type: {{contentType}}
+
+### 5) (Optionnel) DELETE all + vérif vide
+DELETE {{baseUrl}}/api/articles
+GET {{baseUrl}}/api/articles
+
+
+> Pour une vraie charge, préfère la boucle Bash (500/5000 items). Le REST Client ne gère pas les boucles nativement.
+
+
+-----------------------------------------------------------------------------------------------------------------------
+## Récap "ce qui prouve l’éphémère vs persistant"
+-----------------------------------------------------------------------------------------------------------------------
+
+- docker compose down → les conteneurs tombent, les données restent (volume conservé).
+- docker compose down -v → le volume est supprimé → tu perds les données.
+- Recréer un nouveau stack qui monte next_articles_pgdata → tu retrouves tout (même volume).
+- Backup réel = pg_dump / pg_restore si tu veux une copie indépendante.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ================================================================================================================
+ÉTAPE 10 – Migrations des schémas (Prisma ↔ PostgreSQL)
+# ================================================================================================================
+
+-----------------------------------------------------------------------------------------------------------------------
+10.0. Pré-requis rapides
+-----------------------------------------------------------------------------------------------------------------------
+
+DB up : docker compose up -d
+.env correct : DATABASE_URL="postgresql://app_user:app_password@localhost:5432/articles_db?schema=public"
+Client Prisma à jour : npx prisma generate
+
+
+-----------------------------------------------------------------------------------------------------------------------
+10.1. Deux modes de migration
+-----------------------------------------------------------------------------------------------------------------------
+
+> Dev (interactif) : crée une nouvelle migration et l’applique.
+  npx prisma migrate dev --name <message_migration>
+  
+> Prod (CI/serveur) : applique toutes les migrations existantes (ne crée rien).
+  npx prisma migrate deploy
+  
+
+> État des migrations :
+npx prisma migrate status
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+10.2. Renommer des colonnes camelCase → snake_case (recommandé pour SQL direct)
+-----------------------------------------------------------------------------------------------------------------------
+
+> Dans prisma/schema.prisma :
+
+prisma
+model Article {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt       @map("updated_at")
+
+  @@map("articles")
+}
+
+-----------------------------------------------------------------------------------------------------------------------
+Puis :
+-----------------------------------------------------------------------------------------------------------------------
+
+
+npx prisma generate
+npx prisma migrate dev --name rename_cols_to_snake
+
+
+> Prisma générera un ALTER TABLE ... RENAME COLUMN sans perte de données.
+
+
+-----------------------------------------------------------------------------------------------------------------------
+10.3. Passer l’ID en UUID natif Postgres (facilite le SQL direct)
+-----------------------------------------------------------------------------------------------------------------------
+
+> Schéma :
+
+prisma
+model Article {
+  id        String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  title     String
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt       @map("updated_at")
+
+  @@map("articles")
+}
+
+
+Ajoute (si besoin) l’extension dans la migration SQL générée :
+
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Puis :
+-----------------------------------------------------------------------------------------------------------------------
+
+
+npx prisma generate
+npx prisma migrate dev --name id_to_uuid
+
+
+-----------------------------------------------------------------------------------------------------------------------
+⚠️ Si la table contient déjà des données avec des ids non-UUID, un plan de transition est nécessaire :
+-----------------------------------------------------------------------------------------------------------------------
+
+1. Ajouter une nouvelle colonne id_uuid UUID DEFAULT gen_random_uuid().
+2. Copier les relations/clé primaire dessus.
+3. Basculer PK, drop ancienne colonne, renommer.
+
+
+-----------------------------------------------------------------------------------------------------------------------
+9.4. Ajouter des contraintes / index
+-----------------------------------------------------------------------------------------------------------------------
+
+> Exemples dans Prisma :
+
+
+model Article {
+  id        String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  title     String
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt       @map("updated_at")
+
+  @@unique([title])                       // contrainte d’unicité
+  @@index([createdAt(sort: Desc)])        // index
+  @@map("articles")
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Puis :
+-----------------------------------------------------------------------------------------------------------------------
+
+
+npx prisma migrate dev --name add_constraints_indexes
+
+
+-----------------------------------------------------------------------------------------------------------------------
+10.5. Migration + data migration (SQL custom)
+-----------------------------------------------------------------------------------------------------------------------
+
+> Vous pouvez inclure des scripts SQL dans la migration générée (prisma/migrations/<timestamp>_<name>/migration.sql).
+
+> Exemple : backfill d’un nouveau champ summary (ajouté au schéma) :
+
+
+model Article {
+  id        String   @id @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  title     String
+  content   String
+  summary   String?  @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt       @map("updated_at")
+  @@map("articles")
+}
+
+
+Après npx prisma migrate dev --name add_summary, ouvre migration.sql et ajoute :
+
+
+UPDATE "articles" SET "summary" = LEFT("content", 120);
+
+
+-----------------------------------------------------------------------------------------------------------------------
+10.6. Après un down -v (DB vierge)
+-----------------------------------------------------------------------------------------------------------------------
+
+1. Recrée la DB si besoin :
+
+
+docker compose exec -T db psql -U app_user -d postgres -c '\l'
+docker compose exec -T db createdb -U app_user articles_db   # si absente
+
+
+2. Réapplique le schéma :
+
+
+npx prisma migrate deploy      # en prod
+# ou
+npx prisma migrate dev         # en dev
+
+
+3. (Optionnel) Seed :
+
+   - via API (boucle curl) ou
+   - via Prisma seeder :
+
+     > json
+     // package.json
+     { "scripts": { "seed": "tsx prisma/seed.ts" } }
+     
+
+     > ts
+     // prisma/seed.ts
+     import { PrismaClient } from '@prisma/client'
+     const prisma = new PrismaClient()
+     await prisma.article.createMany({
+       data: Array.from({length: 200}).map((_,i)=>({title:A#${i+1},content:C#${i+1}}))
+     })
+     await prisma.$disconnect()
+     
+
+     > commande bash
+     npm run seed
+     
+
+-----------------------------------------------------------------------------------------------------------------------
+10.7. Bonnes pratiques migrations
+-----------------------------------------------------------------------------------------------------------------------
+
+Toujours commit prisma/migrations/ (historique versionné).
+-  Un changement de schéma = une migration (petite, claire).
+Jamais éditer rétroactivement une migration déjà déployée en prod.
+- Dev : migrate dev. CI/Prod : migrate deploy.
+prisma validate avant de lancer pour détecter les incohérences.
+prisma format pour garder un schéma propre.
+
+
+-----------------------------------------------------------------------------------------------------------------------
+10.8. Outils de contrôle
+-----------------------------------------------------------------------------------------------------------------------
+
+
+npx prisma validate
+npx prisma format
+npx prisma db pull          # importer le schéma depuis la DB (attention à l’écrasement)
+npx prisma db push          # pousser le schéma (sans fichiers de migration) — éviter en prod
+npx prisma studio           # UI pour visualiser/éditer (dev)
+
+
+-----------------------------------------------------------------------------------------------------------------------
+10.9. Dépannage express
+-----------------------------------------------------------------------------------------------------------------------
+
+> Table/colonne introuvable après migration :
+  → npx prisma migrate status ; vérifier que tu as bien exécuté migrate dev/deploy sur la bonne DB (bonne DATABASE_URL).
+> Conflits d’IDs/contraintes :
+  → préparer une migration en deux temps (ajout colonne, backfill, bascule).
+> Erreur de quoting SQL (CamelCase) :
+  → soit mapper en snake_case (section 9.2), soit toujours citer "CreatedAt".
+
+
+-----------------------------------------------------------------------------------------------------------------------
+#Check-list « j’applique une modif de schéma »
+-----------------------------------------------------------------------------------------------------------------------
+
+
+# 10.9.1) éditer prisma/schema.prisma
+# 10.9.2) générer client
+npx prisma generate
+# 10.9.3) créer & appliquer migration (dev)
+npx prisma migrate dev --name <changement>
+#    OU déployer migrations existantes (prod)
+npx prisma migrate deploy
+# 10.9.4) (optionnel) data migration dans le .sql généré
+# 10.9.5) tester : endpoints, psql, prisma studio
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ================================================================================================================
+ÉTAPE 11 – EXERCICE SUR LES Migrations des schémas (Prisma ↔ PostgreSQL)
+# ================================================================================================================
+
+-----------------------------------------------------------------------------------------------------------------------
+# Nouveau schéma (précis et pratique)
+-----------------------------------------------------------------------------------------------------------------------
+
+> prisma/schema.prisma
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Article {
+  id         String   @id @default(cuid())         // on garde cuid() pour éviter un chantier UUID
+  title      String   @unique
+  content    String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt       @map("updated_at")
+
+  @@map("articles")                                  // table = articles
+  @@index([createdAt(sort: Desc)])                   // index utile pour ORDER BY
+}
+
+
+> Résultat côté Postgres : colonnes created_at, updated_at en snake_case, mais tu continues d’écrire createdAt/updatedAt en TS.
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# Commandes "pratique direct" (copiez/collez)
+-----------------------------------------------------------------------------------------------------------------------
+
+> DB vide après down -v ? c’est ok, ces commandes recréent tout.
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 0) Assurez la DB en ligne (selon ton compose)
+-----------------------------------------------------------------------------------------------------------------------
+
+docker compose up -d
+docker compose exec -T db psql -U app_user -d postgres -c '\l' \
+  | grep -q articles_db || docker compose exec -T db createdb -U app_user articles_db
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 1) Prisma prêts
+-----------------------------------------------------------------------------------------------------------------------
+
+npx prisma format
+npx prisma generate
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# 2) Créer la migration (renames + contraintes)
+-----------------------------------------------------------------------------------------------------------------------
+
+npx prisma migrate dev --name rename_to_snake_and_seed_prep
+
+
+-----------------------------------------------------------------------------------------------------------------------
+> À ce stade, Prisma a généré un dossier, par ex. :
+-----------------------------------------------------------------------------------------------------------------------
+  
+  prisma/migrations/20251008xxxxxx_rename_to_snake_and_seed_prep/migration.sql
+  
+
+-----------------------------------------------------------------------------------------------------------------------
+# Insérer des données dans la même migration
+-----------------------------------------------------------------------------------------------------------------------
+
+Ouvre le fichier migration.sql qui vient d’être créé et, tout en bas (après les ALTER/CREATE), ajoute le bloc SQL suivant :
+
+> sql
+-- -------------------------------------------------------------------
+-- Data seed initial (id = cuid() côté Prisma ; ici on met des ids fixes)
+-- -------------------------------------------------------------------
+INSERT INTO articles (id, title, content, created_at, updated_at) VALUES
+  ('seed_1', 'Bienvenue', 'Premier article inséré par migration.', now(), now()),
+  ('seed_2', 'Concepts Docker', 'Volumes, conteneurs, persistance.', now(), now()),
+  ('seed_3', 'Prisma + Postgres', 'Migrations, mapping snake_case.', now(), now()),
+  ('seed_4', 'Tests API', 'GET/POST/PUT/DELETE via Next.js API routes.', now(), now()),
+  ('seed_5', 'Backup/Restore', 'pg_dump & pg_restore — indispensable.', now(), now());
+
+
+> Remarques :
+>
+> - Après ta migration, les colonnes sont en snake_case, donc pas besoin de guillemets pour created_at/updated_at.
+> - La contrainte @unique sur title empêche des doublons si tu relances la même migration ailleurs (tu peux changer les titres si besoin).
+
+Ensuite, applique (ou ré-applique) proprement :
+
+
+# 3) Si la migration n’est pas encore appliquée (cas normal) :
+npx prisma migrate dev
+
+# (ou en prod/CI)
+# npx prisma migrate deploy
+
+
+-----------------------------------------------------------------------------------------------------------------------
+# Vérifications rapides
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+# Compter
+-----------------------------------------------------------------------------------------------------------------------
+
+docker compose exec -T db psql -U app_user -d articles_db \
+  -c 'SELECT COUNT(*) FROM "articles";'
+
+-----------------------------------------------------------------------------------------------------------------------
+# Voir les 5 derniers
+-----------------------------------------------------------------------------------------------------------------------
+
+docker compose exec -T db psql -U app_user -d articles_db \
+  -c 'SELECT id, title, created_at FROM articles ORDER BY created_at DESC LIMIT 5;'
+
+
+-----------------------------------------------------------------------------------------------------------------------
+Côté API (Next.js), tu devrais voir les entrées via :
+-----------------------------------------------------------------------------------------------------------------------
+
+curl -s http://localhost:3000/api/articles | jq '.[0:5]'
+
+
+-----------------------------------------------------------------------------------------------------------------------
+## Variante : si ta table existait déjà en snake_case
+-----------------------------------------------------------------------------------------------------------------------
+
+- Prisma génèrera moins d’ALTER (ou aucun rename).
+- Tu laisses quand même les INSERT à la fin de migration.sql.
+- Si la migration refuse (doublons title), modifie les titres seed.
+
+-----------------------------------------------------------------------------------------------------------------------
+## Variante : seed hors migration (recommandé pour rejouer sans toucher au schéma)
+-----------------------------------------------------------------------------------------------------------------------
+
+Si vous préfèrez séparer schéma et données, crée un seeder :
+
+-----------------------------------------------------------------------------------------------------------------------
+> package.json
+-----------------------------------------------------------------------------------------------------------------------
+
+json
+{
+  "scripts": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------
+prisma/seed.ts
+-----------------------------------------------------------------------------------------------------------------------
+
+
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
+async function main() {
+  await prisma.article.createMany({
+    data: [
+      { title: 'Bienvenue',        content: 'Premier article inséré par seed.' },
+      { title: 'Concepts Docker',   content: 'Volumes, conteneurs, persistance.' },
+      { title: 'Prisma + Postgres', content: 'Migrations, mapping snake_case.' },
+      { title: 'Tests API',         content: 'GET/POST/PUT/DELETE via Next.js.' },
+      { title: 'Backup/Restore',    content: 'pg_dump & pg_restore — indispensable.' }
+    ],
+    skipDuplicates: true
+  });
+  const count = await prisma.article.count();
+  console.log('Total articles:', count);
+}
+main().finally(() => prisma.$disconnect());
+
+
+> Puis :
+
+bash
+npx prisma generate
+npm run seed
+
+
+-----------------------------------------------------------------------------------------------------------------------
+## Résumé ultra-court
+-----------------------------------------------------------------------------------------------------------------------
+
+1. Mets le schéma ci-dessus (snake_case mappé, unique + index).
+2. npx prisma migrate dev --name rename_to_snake_and_seed_prep
+3. Ouvre migration.sql généré → ajoute les INSERT ... VALUES (...) fournis.
+4. npx prisma migrate dev (ou deploy)
+5. Vérifie avec SELECT COUNT(*) FROM articles;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ================================================================================================================
+ANNEXE 1 - 
+# ================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+# ================================================================================================================
+ANNEXE 2 - 
+# ================================================================================================================
+
+Pour régler le dysfocntionnemnet ==>
+
+rm -rf node_modules package-lock.json
+npm install prisma@5 @prisma/client@5
+
+
+# repartir propre
+rm -rf node_modules package-lock.json
+npm install prisma @prisma/client
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ================================================================================================================
+ANNEXE 3 - 
+# ================================================================================================================
+
+
+Tu n’as pas Node.js installé (donc pas npm). Voici deux façons rapides — je te donne la recommandée (nvm) et la rapide (apt).
+
+Option A — Recommandée (nvm, versions à jour)
+
+bash
+# 1) Installer nvm (gestionnaire de versions Node)
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+# Charger nvm dans la session courante
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+# 2) Installer la LTS (ex. Node 20)
+nvm install --lts
+nvm use --lts
+node -v
+npm -v
+
+
+Option B — Rapide (apt, souvent versions plus vieilles)
+
+bash
+sudo apt update
+sudo apt install -y nodejs npm
+node -v
+npm -v
+
+
+---
+
+Ensuite : installer Prisma et initialiser
+
+Dans ton projet next-01-in-prisma-linux :
+
+bash
+# (si besoin) initialiser le package.json
+npm init -y
+
+# installer Prisma CLI (dev) et le client
+npm install -D prisma
+npm install @prisma/client
+
+# initialiser Prisma (créera prisma/schema.prisma et .env)
+npx prisma init
+
+
+#Configure la connexion PostgreSQL
+
+Ouvre .env et mets (adapté à ta stack Docker) :
+
+
+DATABASE_URL="postgresql://app_user:app_password@localhost:5432/articles_db?schema=public"
+
+
+> Si tu as changé le mapping de port (ex. 5433:5432), remplace 5432 par 5433.
+
+Dans prisma/schema.prisma, vérifie :
+
+prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+#Crée un modèle minimal et migre
+
+Exemple :
+
+prisma
+model Article {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+
+Puis :
+
+bash
+# créer la migration et synchroniser la DB
+npx prisma migrate dev --name init
+# générer (si besoin)
+npx prisma generate
+
+
+#Test rapide depuis Node (optionnel)
+
+bash
+node -e "const {PrismaClient}=require('@prisma/client'); const p=new PrismaClient(); (async()=>{console.log(await p.article.findMany()); await p.$disconnect();})();"
+
+
+Si tu vois encore "npm: command not found", assure-toi que :
+
+ tu as bien rechargé le shell après nvm (. ~/.bashrc ou ouvre un nouveau terminal),
+ tu n’exécutes pas dans un shell root où nvm n’est pas chargé.
+
+
+
+
+
+
+
+
+
+
+
+
+# ================================================================================================================
+ANNEXE 4 - 
+# ================================================================================================================
+
+
+Tu ne vois pas la base dans pgAdmin pour l’une de ces raisons courantes :
+
+1) Le serveur n’est pas enregistré dans pgAdmin
+
+Dans pgAdmin → Add New Server
+Host: db • Port: 5432 • DB: articles_db • User: app_user • Password: app_password
+Puis right-click sur le serveur → Refresh et déroule Databases.
+
+2) Le conteneur Postgres a été créé avant que POSTGRES_DB=articles_db ne soit pris en compte
+
+Le dossier de données est persistant; si le volume existait déjà, la DB n’est pas recréée.
+
+bash
+# ATTENTION : supprime toutes les données Postgres du volume !
+docker compose down -v
+docker compose up -d
+
+
+Ensuite, reconnecte-toi dans pgAdmin et Refresh.
+
+3) La DB existe mais tu regardes le mauvais endroit
+
+Dans pgAdmin, une fois connecté au serveur :
+
+
+Servers → local-postgres → Databases
+
+
+Si besoin, F5 ou right-click → Refresh sur Databases.
+
+4) Vérifie côté ligne de commande (source de vérité)
+
+bash
+docker compose exec -it db psql -U app_user -d postgres -c "\l"
+# Doit lister 'articles_db'
+
+# Connexion directe à la DB
+docker compose exec -it db psql -U app_user -d articles_db -c "\dt"
+
+
+5) La DB est là mais les tables n’existent pas encore
+
+Postgres crée la base, pas les tables Prisma. Il faut lancer les migrations :
+
+bash
+# depuis le projet Next.js, avec Node >= 18
+npx prisma generate
+npx prisma migrate dev --name init
+# Vérifie :
+docker compose exec -it db psql -U app_user -d articles_db -c "\dt"
+
+
+6) Détails à garder cohérents
+
+ Fichier Compose : utilise une seule extension (ex. docker-compose.yml) partout.
+ Si tu as changé le mapping en 5433:5432, dans pgAdmin (entre conteneurs) reste sur 5432.
+  Depuis l’hôte, utilise localhost:5433.
+ Le dossier ./docker/init ne s’exécute qu’au premier démarrage du volume. Pour relancer ces scripts, il faut down -v puis up -d.
+
+#Check rapide en 5 commandes
+
+bash
+docker compose ps
+docker compose logs -f db
+docker compose exec -it db psql -U app_user -d postgres -c "\l"
+docker compose exec -it db psql -U app_user -d articles_db -c "\dt"
+npx prisma migrate dev --name init
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ================================================================================================================
+ANNEXE 5 -  Tous les codes
+# ================================================================================================================
+
+
+
+# =========================
+# ÉTAPE 1 — SSH & prérequis
+# =========================
+sudo -s
+apt update
+apt install -y openssh-server
+systemctl enable --now ssh
+ip a
+
+# =========================
+# ÉTAPE 2 — Docker + Compose
+# =========================
+apt-get update
+apt-get install -y ca-certificates curl gnupg
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+| gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+| tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+usermod -aG docker $USER
+# (reconnecte-toi)
+
+docker --version
+docker compose version
+
+# =========================
+# ÉTAPE 3 — Cloner le projet
+# =========================
+cd ~/Desktop
+git clone https://github.com/hrhouma1/next-01-projet03-in-prisma.git next-01-in-prisma-linux
+cd next-01-in-prisma-linux
+
+# =========================
+# ÉTAPE 4 — VS Code (optionnel)
+# =========================
+# (si besoin de droits)
+sudo chown -R "$USER":"$USER" ~/Desktop
+code .
+
+# =========================
+# ÉTAPE 5 — Docker Compose (DB)
+# =========================
+# (crée/édite le docker-compose.yaml selon le guide, puis :)
+docker compose up -d
+docker compose ps
+docker compose logs -f db
+
+# Enlever le warning "version obsolete" (optionnel)
+# sed -i '/^version:/d' docker-compose.yaml
+
+# =========================
+# ÉTAPE 6 — Node LTS + Prisma
+# =========================
+# NVM (recommandé)
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+. "$NVM_DIR/nvm.sh"
+nvm install --lts
+nvm use --lts
+node -v
+npm -v
+
+# Prisma & client
+npm install -D prisma
+npm install @prisma/client
+npx prisma init
+
+# .env (adapter si besoin de port)
+# echo 'DATABASE_URL="postgresql://app_user:app_password@localhost:5432/articles_db?schema=public"' >> .env
+
+npx prisma generate
+npx prisma migrate dev --name init
+
+# =========================
+# ÉTAPE 7 — PSQL (depuis container)
+# =========================
+docker compose exec -it db psql -U app_user -d articles_db -c '\dt'
+docker compose exec -it db psql -U app_user -d articles_db
+
+# =========================
+# AJOUT DE DONNÉES (exemples)
+# =========================
+# Here-doc (SQL multi-lignes)
+docker compose exec -T db psql -U app_user -d articles_db <<'SQL'
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+VALUES ('cm_test_1','Titre 1','Contenu 1', now(), now());
+SELECT COUNT(*) FROM "articles";
+SQL
+
+# Boule de test (500 lignes)
+docker compose exec -T db psql -U app_user -d articles_db <<'SQL'
+INSERT INTO "articles" ("id","title","content","createdAt","updatedAt")
+SELECT 'seed_'||gs, 'Title '||gs, 'Content '||gs, now(), now()
+FROM generate_series(1,500) AS gs;
+SQL
+
+# =========================
+# PERSISTENCE — tests rapides
+# =========================
+docker compose exec -it db psql -U app_user -d articles_db -c 'SELECT COUNT(*) FROM "articles";'
+docker compose down
+docker compose up -d
+docker compose exec -it db psql -U app_user -d articles_db -c 'SELECT COUNT(*) FROM "articles";'  # même nombre
+
+# ⚠️ Éphémère (perte volontaire)
+docker compose down -v
+docker compose up -d
+
+# =========================
+# VOLUMES — inspecter
+# =========================
+docker volume ls
+docker volume inspect next_articles_pgdata | jq -r '.[0].Mountpoint'
+sudo ls -lah /var/lib/docker/volumes/next_articles_pgdata/_data
+docker compose exec -it db mount | grep postgresql
+
+# =========================
+# BACKUP / RESTORE
+# =========================
+mkdir -p backup
+docker compose exec -T db pg_dump -U app_user -d articles_db -F c > "$(pwd)/backup/articles_$(date +%F).dump"
+ls -lh backup/
+
+# Restore sur la même base
+docker compose exec -T db dropdb  -U app_user articles_db || true
+docker compose exec -T db createdb -U app_user articles_db
+docker compose exec -T db pg_restore -U app_user -d articles_db < backup/articles_YYYY-MM-DD.dump
+
+# Restore dans une base clone (test)
+docker compose exec -T db createdb -U app_user articles_clone
+docker compose exec -T db pg_restore -U app_user -d articles_clone < backup/articles_YYYY-MM-DD.dump
+
+# =========================
+# API TESTS — via curl
+# =========================
+curl -s http://localhost:3000/api/articles | jq '.'
+curl -s -X POST http://localhost:3000/api/articles \
+ -H "Content-Type: application/json" \
+ -d '{"title":"Article #1","content":"Contenu 1"}' | jq '.'
+
+# Batch 50 articles
+for i in $(seq 1 50); do
+  curl -s -X POST http://localhost:3000/api/articles \
+  -H "Content-Type: application/json" \
+  -d "{\"title\":\"Article #$i\",\"content\":\"Contenu auto $i\"}" >/dev/null
+done
+
+# =========================
+# PRISMA — migrations utiles
+# =========================
+# Renommer colonnes camelCase -> snake_case (après edit du schema @map)
+npx prisma generate
+npx prisma migrate dev --name rename_cols_to_snake
+
+# Passer id en UUID (après edit du schema @db.Uuid + gen_random_uuid())
+npx prisma generate
+npx prisma migrate dev --name id_to_uuid
+
+# Ajouter index/unique (après edit du schema)
+npx prisma migrate dev --name add_constraints_indexes
+
+# Statut / déploiement
+npx prisma migrate status
+npx prisma migrate deploy
+
+# Outils
+npx prisma validate
+npx prisma format
+npx prisma studio
+
+# =========================
+# SEED Prisma (optionnel)
+# =========================
+# package.json -> "seed": "tsx prisma/seed.ts"
+npx prisma generate
+npm run seed
+
+# =========================
+# RESET NPM (si dépendances cassées)
+# =========================
+rm -rf node_modules package-lock.json
+npm install
+
+
+Rappels rapides
+
+- Persistance: docker compose down garde les volumes.
+- Destruction: docker compose down -v supprime les volumes (données perdues).
+- Backups: utilise pg_dump / pg_restore.
+- Warning Compose: retire version: "3.9" de docker-compose.yaml.
